@@ -124,5 +124,4 @@ def main():
             save_path = "pencil_sketch_output.jpg"
         save_sketch(sketch, save_path)
 
-if __name__ == "__main__":
-    main()
+main()

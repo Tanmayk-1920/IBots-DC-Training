@@ -117,7 +117,7 @@ def main():
     display_sketch(original, sketch)
     
     # Ask to save
-    save_choice = input("Do you want to save the sketch? (y/n): ").strip().lower()
+    save_choice = input("Do you want to save the sketch? (Y/n): ").strip().lower()
     if save_choice == 'y':
         save_path = input("Enter save path (or press Enter for 'pencil_sketch_output.jpg'): ").strip()
         if not save_path:

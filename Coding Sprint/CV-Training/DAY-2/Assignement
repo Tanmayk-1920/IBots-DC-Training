@@ -1,0 +1,87 @@
+import cv2
+import numpy as np
+import os
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def pre_process(image_path):
+    '''
+    Docstring for pre_process
+    
+    :param image_path: Contains path for Image
+    '''
+    # Step 1: Load Image
+    image = cv2.imread(image_path)
+    if image is None:
+        return(None , None)
+
+
+    # Step 2: Convert to Grayscale
+    grayscale_img = cv2.cvtColor(image , cv2.COLOR_BGR2GRAY)
+
+    # Step 3: Apply Gaussian Blur
+    blur_img = cv2.GaussianBlur(grayscale_img , (21,21) , 0)
+
+    # Step 4: Enhance with Hist Equalization
+    enhance_img = cv2.equalizeHist(blur_img)
+
+    return (image , enhance_img)
+
+def detect_circles(gray_img , dp = 1 , minDist = 50 ,
+                    param1 = 50 , param2 = 30 , 
+                    minRadius = 10 , maxRadius = 100):
+    '''
+    Docstring for detect_circles
+    
+    :param gray_img: Preprocessed Image
+    :param dp: Inverse Accumulator Resolution Ratio
+    :param minDist: Min Distance Between Circle Centers
+    :param param1: Upper Canny Threshold
+    :param param2: Lower Canny Threshold
+    :param minRadius: Min Circle Radius
+    :param maxRadius: Max Circle Radius
+    '''
+    circles = cv2.HoughCircles(gray_img , dp =1 , minDist=50,param1=50,param2=30,minRadius=10,maxRadius=100)
+    return circles
+
+def visualize_circle(img , circles):
+    '''
+    Docstring for visualize_circle
+    
+    :param img: Original Color Image
+    :param circles: nd array returned by HoughCircles
+    '''
+    
+    original_img_rgb = cv2.cvtColor(img , cv2.COLOR_BGR2RGB)
+    img_rgb_hough = original_img_rgb.copy()
+
+    
+    fig , axes = plt.subplots(nrows=1 , ncols=2 , figsize=(10,5))
+    axes[0].imshow(original_img_rgb)
+    axes[0].set_title("Original Image")
+    axes[0].axis('off')
+
+    axes[1].imshow(img_rgb_hough)
+    axes[1].set_title("Detected Circles with Labels")
+    axes[1].axis('off')
+
+    if circles is not None:
+        circles = np.uint16(np.around(circles))
+        for i, (x, y, r) in enumerate(circles[0, :]):
+            # Draw circles and labels using Matplotlib methods on the second axis (axes[1])
+            
+            # Draw Green Outline
+            circ_outline = patches.Circle((x, y), r, edgecolor='green', facecolor='none', linewidth=2)
+            axes[1].add_patch(circ_outline)
+            
+            # Draw Red Center
+            center_dot = patches.Circle((x, y), radius=2, color='red')
+            axes[1].add_patch(center_dot)
+            
+            # Add Label (ID and Radius)
+            label = f"ID:{i}\nR:{r}"
+            axes[1].text(x, y - r - 10, label, color='white', weight='bold', 
+                        fontsize=8, ha='center', bbox=dict(facecolor='blue', alpha=0.6, pad=1))
+
+        plt.tight_layout()
+        plt.show()

@@ -44,19 +44,18 @@ def detect_circles(gray_img , dp = 1 , minDist = 50 ,
     circles = cv2.HoughCircles(gray_img , dp =dp , minDist=minDist,param1=param1,param2=param2,minRadius=minRadius,maxRadius=maxRadius)
     return circles
 
-def visualize_circle(img , circles):
+def visualize_circle(img, circles, save_path='hough_circles_detected.png'):
     '''
-    Docstring for visualize_circle
+    Visualize and save detected circles.
     
     :param img: Original Color Image
     :param circles: nd array returned by HoughCircles
+    :param save_path: Path to save the output image (default: 'hough_circles_detected.png')
     '''
-    
-    original_img_rgb = cv2.cvtColor(img , cv2.COLOR_BGR2RGB)
+    original_img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img_rgb_hough = original_img_rgb.copy()
-
     
-    fig , axes = plt.subplots(nrows=1 , ncols=2 , figsize=(10,5))
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10,5))
     axes[0].imshow(original_img_rgb)
     axes[0].set_title("Original Image")
     axes[0].axis('off')
@@ -68,25 +67,26 @@ def visualize_circle(img , circles):
     if circles is not None:
         circles = np.uint16(np.around(circles))
         for i, (x, y, r) in enumerate(circles[0, :]):
-            # Draw circles and labels using Matplotlib methods on the second axis (axes[1])
-            
-            # Draw Green Outline
+            # Green outline
             circ_outline = patches.Circle((x, y), r, edgecolor='green', facecolor='none', linewidth=2)
             axes[1].add_patch(circ_outline)
             
-            # Draw Red Center
+            # Red center
             center_dot = patches.Circle((x, y), radius=2, color='red')
             axes[1].add_patch(center_dot)
             
-            # Add Label (ID and Radius)
+            # Label
             label = f"ID:{i}\nR:{r}"
             axes[1].text(x, y - r - 10, label, color='white', weight='bold', 
-                        fontsize=8, ha='center', bbox=dict(facecolor='blue', alpha=0.6, pad=1))
+                         fontsize=8, ha='center', bbox=dict(facecolor='blue', alpha=0.6, pad=1))
 
         axes[1].set_xlim(0, img_rgb_hough.shape[1])
         axes[1].set_ylim(img_rgb_hough.shape[0], 0)
-        plt.tight_layout()
-        plt.show()
+    
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')  # High-res PNG
+    print(f"Image saved to: {save_path}")
+    plt.show()
 
 def calculate_statistics(circles):
     '''
@@ -110,11 +110,12 @@ def calculate_statistics(circles):
     }
     return stats
 
-def main(image_path):
+def main(image_path, save_path='hough_circles_detected.png'):
     '''
-    Main function to run circle detection pipeline.
+    Main function to run circle detection pipeline with save capability.
     
     :param image_path: Path to the input image file
+    :param save_path: Path to save the output image with detected circles
     '''
     # Preprocess image
     image, enhanced = pre_process(image_path)
@@ -126,8 +127,8 @@ def main(image_path):
     circles = detect_circles(enhanced)
     
     if circles is not None:
-        # Visualize results
-        visualize_circle(image, circles)
+        # Visualize and save results
+        visualize_circle(image, circles, save_path)
         
         # Calculate and print statistics
         stats = calculate_statistics(circles)
@@ -139,6 +140,16 @@ def main(image_path):
         print("\nIndividual Circles:")
         for i, circle in enumerate(stats['circles']):
             print(f"  Circle {i}: x={circle['x']:.1f}, y={circle['y']:.1f}, r={circle['radius']:.1f}")
+        print(f"\nVisualization saved to: {save_path}")
     else:
         print("No circles detected.")
 
+# Usage examples
+if __name__ == "__main__":
+    # Basic usage with default save name
+    main("circles_image.jpg")
+    
+    # Custom save path
+    main("coin_test1.jpg", "detected_coins.jpg")
+    
+   

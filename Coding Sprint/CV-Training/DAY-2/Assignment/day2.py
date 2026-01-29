@@ -147,4 +147,4 @@ def main(image_path, save_path='hough_circles_detected.png'):
 # Usage examples
 if __name__ == "__main__":
     # Custom save path
-    main("/workspaces/IBots-DC-Training/Coding Sprint/CV-Training/DAY-2/Assignment/circle_test3.jpg", "test3_save.jpg")
+    main("/workspaces/IBots-DC-Training/Coding Sprint/CV-Training/DAY-2/Assignment/test_3.jpg", "test3_save.jpg")

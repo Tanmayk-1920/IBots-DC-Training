@@ -41,7 +41,7 @@ def detect_circles(gray_img , dp = 1 , minDist = 50 ,
     :param minRadius: Min Circle Radius
     :param maxRadius: Max Circle Radius
     '''
-    circles = cv2.HoughCircles(gray_img , dp =dp , minDist=minDist,param1=param1,param2=param2,minRadius=minRadius,maxRadius=maxRadius)
+    circles = cv2.HoughCircles(gray_img ,cv2.HOUGH_GRADIENT , dp =dp , minDist=minDist,param1=param1,param2=param2,minRadius=minRadius,maxRadius=maxRadius)
     return circles
 
 def visualize_circle(img, circles, save_path='hough_circles_detected.png'):
@@ -146,8 +146,5 @@ def main(image_path, save_path='hough_circles_detected.png'):
 
 # Usage examples
 if __name__ == "__main__":
-    # Basic usage with default save name
-    main("circles_image.jpg")
-    
     # Custom save path
-    main("coin_test1.jpg", "detected_coins.jpg")
+    main("/workspaces/IBots-DC-Training/Coding Sprint/CV-Training/DAY-2/Assignment/test1.jpg", "detected_coins.jpg")

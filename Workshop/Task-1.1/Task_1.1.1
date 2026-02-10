@@ -1,1 +1,9 @@
+void setup() {
+  Serial.begin(9600); 
+}
 
+void loop() {
+  int irValue = analogRead(A0); 
+  Serial.println(irValue);      
+  delay(100);
+}
